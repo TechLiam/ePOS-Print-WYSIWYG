@@ -461,6 +461,18 @@ body.dark-mode #header-utils button:hover {
     flex: 1;
 }
 
+.properties-empty {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    background-color: var(--bg-sidebar-header);
+    border-radius: 12px;
+    border: 2px dashed var(--border-color);
+    margin: 20px 0;
+}
+
 .popup-field {
     display: flex;
     flex-direction: column;
@@ -618,6 +630,62 @@ body.dark-mode #header-utils button:hover {
     padding: 20px;
     max-height: 70vh;
     overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background-color: var(--bg-sidebar-header);
+}
+
+.modal-footer button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#dialog-ok {
+    background-color: var(--accent-blue);
+    color: white;
+    border: none;
+}
+
+#dialog-ok:hover {
+    background-color: #1d4ed8;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+#dialog-cancel {
+    background-color: var(--bg-button);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+#dialog-cancel:hover {
+    background-color: var(--bg-button-hover);
+    border-color: var(--text-muted);
+}
+
+#dialog-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-field);
+    border-radius: 6px;
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+#dialog-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
 }
 
 .help-section {

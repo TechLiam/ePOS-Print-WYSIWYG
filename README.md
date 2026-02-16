@@ -36,6 +36,8 @@ An interactive, web-based WYSIWYG editor for Epson ePOS-Print XML. This tool all
 - `Ctrl` + `Y`: Redo
 - `Delete` / `Backspace`: Delete selected element
 - `Space` + **Drag**: Pan canvas
+- `+` / `-`: Zoom In / Out
+- `Ctrl` + `0`: Reset Zoom
 
 ## Installation
 

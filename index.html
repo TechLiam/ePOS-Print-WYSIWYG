@@ -13,7 +13,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="app.css">
-    <script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bwip-js@4.5.1/dist/bwip-js.min.js"></script>
+    <script type="module" src="src/main.js"></script>
 </head>
 <body>
     <header>
@@ -22,42 +23,42 @@
             <p>Interactive Editor by Liam Wilson</p>
         </div>
         <div id="header-utils">
-            <button id="btn-help" title="How to use">❓</button>
-            <button id="theme-toggle" title="Toggle Dark Mode">🌓</button>
-            <button id="btn-share" title="Copy Shareable URL">🔗</button>
+            <button id="btn-help" title="How to use" aria-label="Show help and documentation">❓</button>
+            <button id="theme-toggle" title="Toggle Dark Mode" aria-label="Switch between light and dark theme">🌓</button>
+            <button id="btn-share" title="Copy Shareable URL" aria-label="Copy a link to this receipt layout">🔗</button>
         </div>
     </header>
 
     <div id="main-container">
         <div id="editor-area">
-            <div id="toolbar">
-                <div id="toolbar-menu">
-                    <div class="menu-group">
+            <div id="toolbar" role="toolbar" aria-label="Editor toolbar">
+                <div id="toolbar-menu" role="menubar">
+                    <div class="menu-group" role="group" aria-label="File and history">
                         <button type="button" id="btn-save" title="Save XML to file">Save</button>
                         <button type="button" id="btn-load" title="Load XML from file">Load</button>
                         <button type="button" id="btn-print" title="Send to network printer">Print</button>
-                        <div class="toolbar-divider"></div>
-                        <button type="button" id="btn-undo" title="Undo (Ctrl+Z)">↶</button>
-                        <button type="button" id="btn-redo" title="Redo (Ctrl+Y)">↷</button>
-                        <div class="toolbar-divider"></div>
-                        <button type="button" id="zoom-out" title="Zoom Out">−</button>
-                        <button type="button" id="zoom-in" title="Zoom In">＋</button>
+                        <div class="toolbar-divider" aria-hidden="true"></div>
+                        <button type="button" id="btn-undo" title="Undo (Ctrl+Z)" aria-label="Undo">↶</button>
+                        <button type="button" id="btn-redo" title="Redo (Ctrl+Y)" aria-label="Redo">↷</button>
+                        <div class="toolbar-divider" aria-hidden="true"></div>
+                        <button type="button" id="zoom-out" title="Zoom Out" aria-label="Zoom out">−</button>
+                        <button type="button" id="zoom-in" title="Zoom In" aria-label="Zoom in">＋</button>
                         <button type="button" id="zoom-reset" title="Reset Zoom">100%</button>
-                        <input type="file" id="file-input" accept=".xml" style="display: none;">
+                        <input type="file" id="file-input" accept=".xml" style="display: none;" aria-hidden="true">
                     </div>
-                    <div class="utils-group">
+                    <div class="utils-group" role="group" aria-label="Utilities">
                         <button type="button" id="btn-copy-xml">Copy XML</button>
                         <button type="button" id="btn-clear-all">Clear All</button>
                     </div>
                 </div>
                 <div id="toolbar-main">
                     <div class="tabs-row">
-                        <div class="tabs-header">
-                            <button type="button" class="tab-link active" data-tab="tab-text">Text</button>
-                            <button type="button" class="tab-link" data-tab="tab-graphics">Graphics</button>
-                            <button type="button" class="tab-link" data-tab="tab-layout">Layout</button>
+                        <div class="tabs-header" role="tablist">
+                            <button type="button" class="tab-link active" data-tab="tab-text" role="tab" aria-selected="true" aria-controls="tab-text">Text</button>
+                            <button type="button" class="tab-link" data-tab="tab-graphics" role="tab" aria-selected="false" aria-controls="tab-graphics">Graphics</button>
+                            <button type="button" class="tab-link" data-tab="tab-layout" role="tab" aria-selected="false" aria-controls="tab-layout">Layout</button>
                         </div>
-                        <select id="paper-size-select" title="Change Paper Size">
+                        <select id="paper-size-select" title="Change Paper Size" aria-label="Select paper width">
                             <option value="576">80mm (576 dots)</option>
                             <option value="420">58mm (420 dots)</option>
                             <option value="384">58mm (384 dots)</option>
@@ -90,11 +91,11 @@
 
         <div id="properties-panel">
             <div id="properties-header">
-                <h3 id="properties-title">Properties</h3>
+                <h3 id="properties-title" tabindex="-1">Properties</h3>
                 <button id="properties-close">×</button>
             </div>
             <div id="properties-content"></div>
-            <div id="properties-footer">
+            <div id="properties-footer" style="display: none;">
                 <div class="properties-buttons">
                     <button type="button" id="properties-move-up" title="Move Up">Move Up ↑</button>
                     <button type="button" id="properties-move-down" title="Move Down">Move Down ↓</button>
@@ -134,8 +135,29 @@
                     <ul>
                         <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> : Undo / Redo</li>
                         <li><kbd>Delete</kbd> / <kbd>Backspace</kbd> : Delete selected element</li>
+                        <li><kbd>+</kbd> / <kbd>−</kbd> : Zoom In / Out</li>
+                        <li><kbd>Ctrl</kbd>+<kbd>0</kbd> : Reset Zoom</li>
                     </ul>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dialog-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="dialog-title">Alert</h3>
+                <button id="dialog-close" aria-label="Close dialog">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="dialog-message"></p>
+                <div id="dialog-input-container" style="display: none; margin-top: 15px;">
+                    <input type="text" id="dialog-input" aria-label="Input value">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="dialog-cancel" style="display: none;">Cancel</button>
+                <button type="button" id="dialog-ok">OK</button>
             </div>
         </div>
     </div>
