@@ -1,0 +1,145 @@
+<!--
+  ePOS-Print WYSIWYG
+  Copyright (c) 2026 Liam Wilson
+  Licensed under the MIT License. See LICENSE file for details.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ePOS-Print WYSIWYG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="app.css">
+    <script src="app.js"></script>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>ePOS-Print WYSIWYG</h1>
+            <p>Interactive Editor by Liam Wilson</p>
+        </div>
+        <div id="header-utils">
+            <button id="btn-help" title="How to use">❓</button>
+            <button id="theme-toggle" title="Toggle Dark Mode">🌓</button>
+            <button id="btn-share" title="Copy Shareable URL">🔗</button>
+        </div>
+    </header>
+
+    <div id="main-container">
+        <div id="editor-area">
+            <div id="toolbar">
+                <div id="toolbar-menu">
+                    <div class="menu-group">
+                        <button type="button" id="btn-save" title="Save XML to file">Save</button>
+                        <button type="button" id="btn-load" title="Load XML from file">Load</button>
+                        <button type="button" id="btn-print" title="Send to network printer">Print</button>
+                        <div class="toolbar-divider"></div>
+                        <button type="button" id="btn-undo" title="Undo (Ctrl+Z)">↶</button>
+                        <button type="button" id="btn-redo" title="Redo (Ctrl+Y)">↷</button>
+                        <div class="toolbar-divider"></div>
+                        <button type="button" id="zoom-out" title="Zoom Out">−</button>
+                        <button type="button" id="zoom-in" title="Zoom In">＋</button>
+                        <button type="button" id="zoom-reset" title="Reset Zoom">100%</button>
+                        <input type="file" id="file-input" accept=".xml" style="display: none;">
+                    </div>
+                    <div class="utils-group">
+                        <button type="button" id="btn-copy-xml">Copy XML</button>
+                        <button type="button" id="btn-clear-all">Clear All</button>
+                    </div>
+                </div>
+                <div id="toolbar-main">
+                    <div class="tabs-row">
+                        <div class="tabs-header">
+                            <button type="button" class="tab-link active" data-tab="tab-text">Text</button>
+                            <button type="button" class="tab-link" data-tab="tab-graphics">Graphics</button>
+                            <button type="button" class="tab-link" data-tab="tab-layout">Layout</button>
+                        </div>
+                        <select id="paper-size-select" title="Change Paper Size">
+                            <option value="576">80mm (576 dots)</option>
+                            <option value="420">58mm (420 dots)</option>
+                            <option value="384">58mm (384 dots)</option>
+                        </select>
+                    </div>
+                    <div class="tabs-content">
+                        <div id="tab-text" class="tab-pane active">
+                            <button type="button" data-type="text" title="Add text element">Text</button>
+                            <button type="button" data-type="newline" title="Add new line character">New Line</button>
+                        </div>
+                        <div id="tab-graphics" class="tab-pane">
+                            <button type="button" data-type="hline" title="Add horizontal line">H-Line</button>
+                            <button type="button" data-type="barcode" title="Add barcode">Barcode</button>
+                            <button type="button" data-type="symbol" title="Add 2D symbol/QR code">2D Symbol</button>
+                            <button type="button" data-type="image" title="Add image">Image</button>
+                            <button type="button" data-type="logo" title="Add stored logo">Logo</button>
+                        </div>
+                        <div id="tab-layout" class="tab-pane">
+                            <button type="button" data-type="feed" title="Add paper feed">Feed</button>
+                            <button type="button" data-type="cut" title="Add paper cut">Cut</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="canvas-container">
+                <canvas id="preview"></canvas>
+            </div>
+            <textarea id="xml-input" placeholder="Enter ePOS-Print XML here..."></textarea>
+        </div>
+
+        <div id="properties-panel">
+            <div id="properties-header">
+                <h3 id="properties-title">Properties</h3>
+                <button id="properties-close">×</button>
+            </div>
+            <div id="properties-content"></div>
+            <div id="properties-footer">
+                <div class="properties-buttons">
+                    <button type="button" id="properties-move-up" title="Move Up">Move Up ↑</button>
+                    <button type="button" id="properties-move-down" title="Move Down">Move Down ↓</button>
+                    <button type="button" id="properties-delete">Delete Element</button>
+                </div>
+                <p style="font-size: 0.8em; color: #666; margin-top: 10px;">Changes are applied instantly.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>How to Use</h3>
+                <button id="help-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h4>Basics</h4>
+                    <ul>
+                        <li><strong>Add:</strong> Use the <strong>Text</strong>, <strong>Graphics</strong>, and <strong>Layout</strong> tabs to add elements.</li>
+                        <li><strong>Edit:</strong> Click any element on the preview to open its properties.</li>
+                        <li><strong>Reorder:</strong> Use <strong>Move Up ↑</strong> and <strong>Move Down ↓</strong> in the properties panel.</li>
+                        <li><strong>Files:</strong> Use <strong>Save</strong> and <strong>Load</strong> to export/import ePOS-Print XML files.</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><strong>Pan:</strong> Hold <kbd>Space</kbd> + <strong>Left Click</strong> or use <strong>Middle Click</strong>.</li>
+                        <li><strong>Zoom:</strong> Use <kbd>+</kbd> / <kbd>−</kbd> buttons or <kbd>Ctrl</kbd> + <strong>Mouse Wheel</strong>.</li>
+                        <li><strong>Reset:</strong> Click <strong>100%</strong> to reset zoom and position.</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4>Keyboard Shortcuts</h4>
+                    <ul>
+                        <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> : Undo / Redo</li>
+                        <li><kbd>Delete</kbd> / <kbd>Backspace</kbd> : Delete selected element</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup-overlay"></div>
+</body>
+</html>
