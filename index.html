@@ -23,6 +23,7 @@
             <p>Interactive Editor by Liam Wilson</p>
         </div>
         <div id="header-utils">
+            <button id="btn-toggle-outline" title="Toggle Outline" aria-label="Show/Hide Outline Panel">📋</button>
             <button id="btn-help" title="How to use" aria-label="Show help and documentation">❓</button>
             <button id="theme-toggle" title="Toggle Dark Mode" aria-label="Switch between light and dark theme">🌓</button>
             <button id="btn-share" title="Copy Shareable URL" aria-label="Copy a link to this receipt layout">🔗</button>
@@ -30,6 +31,14 @@
     </header>
 
     <div id="main-container">
+        <div id="outline-panel">
+            <div id="outline-header">
+                <h3 id="outline-title">Outline</h3>
+                <button id="outline-close" title="Close Outline" aria-label="Close Outline Panel">×</button>
+            </div>
+            <div id="outline-content"></div>
+        </div>
+
         <div id="editor-area">
             <div id="toolbar" role="toolbar" aria-label="Editor toolbar">
                 <div id="toolbar-menu" role="menubar">
@@ -117,7 +126,8 @@
                     <h4>Basics</h4>
                     <ul>
                         <li><strong>Add:</strong> Use the <strong>Text</strong>, <strong>Graphics</strong>, and <strong>Layout</strong> tabs to add elements.</li>
-                        <li><strong>Edit:</strong> Click any element on the preview to open its properties.</li>
+                        <li><strong>Outline:</strong> View and select elements from the <strong>Outline</strong> panel on the left.</li>
+                        <li><strong>Edit:</strong> Click any element on the preview or outline to open its properties.</li>
                         <li><strong>Reorder:</strong> Use <strong>Move Up ↑</strong> and <strong>Move Down ↓</strong> in the properties panel.</li>
                         <li><strong>Files:</strong> Use <strong>Save</strong> and <strong>Load</strong> to export/import ePOS-Print XML files.</li>
                     </ul>

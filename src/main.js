@@ -44,12 +44,16 @@ class EposApp {
         this.panX = parseFloat(localStorage.getItem('panX') || '0');
         this.panY = parseFloat(localStorage.getItem('panY') || '0');
 
+        // Outline visibility
+        this.outlineVisible = localStorage.getItem('outline-visible') !== 'false';
+
         this.init();
     }
 
     init() {
         this.uiManager.initTheme();
         this.applyTransform();
+        this.updateOutlineVisibility();
 
         // Paper size
         const paperSizeSelect = document.getElementById('paper-size-select');
@@ -109,6 +113,14 @@ class EposApp {
         if (this.hoveredElement) {
             this.hoveredElement = this.renderer.elementsMetadata.find(m => m.node === this.hoveredElement.node) || null;
         }
+
+        // Update Outline
+        this.uiManager.updateOutline(this.xmlDoc, this.editingElement, (node) => {
+            const meta = this.renderer.elementsMetadata.find(m => m.node === node);
+            if (meta) {
+                this.showProperties(meta);
+            }
+        });
     }
 
     findEquivalentNode(oldNode, newDoc) {
@@ -181,6 +193,7 @@ class EposApp {
 
         // UI Buttons
         document.getElementById('properties-close').addEventListener('click', () => this.closeProperties());
+        document.getElementById('outline-close').addEventListener('click', () => this.toggleOutline());
         document.getElementById('properties-move-up').addEventListener('click', () => this.moveElement('up'));
         document.getElementById('properties-move-down').addEventListener('click', () => this.moveElement('down'));
         document.getElementById('properties-delete').addEventListener('click', () => this.deleteElement());
@@ -202,6 +215,7 @@ class EposApp {
         
         document.getElementById('btn-print').addEventListener('click', () => this.printToPrinter());
         document.getElementById('btn-share').addEventListener('click', () => this.copyShareUrl());
+        document.getElementById('btn-toggle-outline').addEventListener('click', () => this.toggleOutline());
 
         // Keyboard shortcuts
         window.addEventListener('keydown', (e) => this.handleKeyDown(e));
@@ -309,12 +323,38 @@ class EposApp {
         this.editingElement = meta.node;
         this.uiManager.showProperties(meta, this.getAllowedAttributes.bind(this), this.createPropertyField.bind(this), autoFocus);
         this.renderer.draw(this.hoveredElement, this.editingElement);
+        this.uiManager.updateOutlineActive(this.editingElement);
+
+        // On mobile, close outline when selecting an element to give room for properties
+        if (window.innerWidth <= 768 && this.outlineVisible) {
+            this.toggleOutline();
+        }
     }
 
     closeProperties() {
         this.editingElement = null;
         this.uiManager.closeProperties();
         this.renderer.draw(this.hoveredElement, this.editingElement);
+    }
+
+    toggleOutline() {
+        this.outlineVisible = !this.outlineVisible;
+        localStorage.setItem('outline-visible', this.outlineVisible);
+        this.updateOutlineVisibility();
+    }
+
+    updateOutlineVisibility() {
+        const panel = document.getElementById('outline-panel');
+        const btn = document.getElementById('btn-toggle-outline');
+        if (panel) {
+            if (this.outlineVisible) {
+                panel.classList.remove('hidden');
+                btn.classList.add('active');
+            } else {
+                panel.classList.add('hidden');
+                btn.classList.remove('active');
+            }
+        }
     }
 
     handleMouseMove(e) {

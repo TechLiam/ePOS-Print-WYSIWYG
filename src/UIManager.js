@@ -15,6 +15,9 @@ export class UIManager {
         const btnShare = document.getElementById('btn-share');
         if (btnShare) btnShare.setAttribute('aria-label', 'Copy Shareable URL');
 
+        const btnOutline = document.getElementById('btn-toggle-outline');
+        if (btnOutline) btnOutline.setAttribute('aria-label', 'Toggle Outline Panel');
+
         const btnUndo = document.getElementById('btn-undo');
         if (btnUndo) btnUndo.setAttribute('aria-label', 'Undo');
 
@@ -81,6 +84,122 @@ export class UIManager {
             `;
         }
         if (footer) footer.style.display = 'none';
+
+        // Update outline active state
+        this.updateOutlineActive(null);
+    }
+
+    updateOutline(xmlDoc, editingElement, onSelectFn) {
+        const content = document.getElementById('outline-content');
+        if (!content) return;
+
+        content.innerHTML = '';
+        
+        if (!xmlDoc || !xmlDoc.documentElement) return;
+
+        const nodes = Array.from(xmlDoc.documentElement.childNodes).filter(n => n.nodeType === Node.ELEMENT_NODE);
+        
+        if (nodes.length === 0) {
+            content.innerHTML = `
+                <div class="properties-empty" style="margin: 10px; border-width: 1px; padding: 15px; font-size: 0.8rem;">
+                    <p>No elements added yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        nodes.forEach((node, index) => {
+            const type = node.localName;
+            const icon = this._getOutlineIcon(type);
+            const label = this._getOutlineLabel(node);
+
+            const item = document.createElement('div');
+            item.className = 'outline-item';
+            item.dataset.index = index;
+            item.setAttribute('role', 'button');
+            item.setAttribute('tabindex', '0');
+            item.setAttribute('aria-label', `Select ${type} element: ${label}`);
+            
+            if (node === editingElement) {
+                item.classList.add('active');
+                item.setAttribute('aria-current', 'true');
+            }
+            
+            item.innerHTML = `
+                <span class="outline-item-icon" aria-hidden="true">${icon}</span>
+                <span class="outline-item-label">${label}</span>
+                <span class="outline-item-tag">&lt;${type}&gt;</span>
+            `;
+            
+            const select = () => onSelectFn(node);
+            item.addEventListener('click', select);
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    select();
+                }
+            });
+            content.appendChild(item);
+        });
+    }
+
+    updateOutlineActive(editingElement) {
+        const content = document.getElementById('outline-content');
+        if (!content) return;
+
+        const items = content.querySelectorAll('.outline-item');
+        if (!editingElement) {
+            items.forEach(item => {
+                item.classList.remove('active');
+                item.removeAttribute('aria-current');
+            });
+            return;
+        }
+
+        // Find which index the editingElement has among element nodes
+        const nodes = Array.from(editingElement.parentNode.childNodes).filter(n => n.nodeType === Node.ELEMENT_NODE);
+        const index = nodes.indexOf(editingElement);
+
+        items.forEach(item => {
+            if (parseInt(item.dataset.index) === index) {
+                item.classList.add('active');
+                item.setAttribute('aria-current', 'true');
+                item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                item.classList.remove('active');
+                item.removeAttribute('aria-current');
+            }
+        });
+    }
+
+    _getOutlineIcon(type) {
+        switch (type) {
+            case 'text': return '📄';
+            case 'barcode': return '█';
+            case 'symbol': return '🔳';
+            case 'image': return '🖼️';
+            case 'hline': return '─';
+            case 'logo': return '🏢';
+            case 'feed': return '↓';
+            case 'cut': return '✂️';
+            default: return '📦';
+        }
+    }
+
+    _getOutlineLabel(node) {
+        const type = node.localName;
+        if (type === 'text') {
+            const text = node.textContent.trim();
+            if (text === '\n') return 'New Line';
+            return text.substring(0, 20) || '(empty)';
+        }
+        if (type === 'barcode' || type === 'symbol') {
+            return node.textContent.trim().substring(0, 15);
+        }
+        if (type === 'logo') {
+            return `Key: ${node.getAttribute('key1')}, ${node.getAttribute('key2')}`;
+        }
+        return '';
     }
 
     initTheme() {
